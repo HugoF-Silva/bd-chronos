@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+pandas
+numpy
+boto3
+WazeRouteCalculator
+httpx
+cachetools
+gunicorn
