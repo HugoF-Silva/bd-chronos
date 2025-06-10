@@ -26,8 +26,7 @@ logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ALERT",
-        "https://ALERT",
+        "https://n8n.bdfinalmenostempo.shop/",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
@@ -162,4 +161,4 @@ def cep_lookup(cep: str):
     url = f"https://www.cepaberto.com/api/v3/cep?cep={cep}"
     headers = {"Authorization": f"Token token={CEP_ABERTO_TOKEN}"}
     resp = requests.get(url, headers=headers)
-    return resp.json() 
+    return resp.json()
