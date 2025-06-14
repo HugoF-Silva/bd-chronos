@@ -5,7 +5,7 @@ from schema import (
     RouteTimeRequest, RouteTimeResponse, RouteTimeResult
 )
 from data_store import DataStore
-from models import WaitTimeEstimator, AdminConfig
+from models import WaitTimeEstimator
 from datetime import datetime, timezone
 from utils import get_route_time
 import requests

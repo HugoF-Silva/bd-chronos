@@ -38,7 +38,7 @@ class DataStore:
         self.units_table = self.dynamodb.Table("units")
         self.table = self.dynamodb.Table(DYNAMODB_TABLE)
         self.user_route_table = self.dynamodb.Table("user_route_times")
-        self.secret = get_secret("ALERT")['ALERT']
+        self.secret = get_secret("pseudonym/bd")["key_salt"]
         self.est_cache = TTLCache(maxsize=320000, ttl=720) 
 
     def ingest_event(self, pseudonym: str, unit: str, event_type: str,
