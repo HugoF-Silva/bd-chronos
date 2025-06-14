@@ -81,6 +81,7 @@ def all_estimates(query_time: datetime = Query(...)):
     units = datastore.list_units()
     estimates = []
     for unit in units:
+        # ola
         # logger.info(f"\nunit {unit}, blue")
         # blue_est = estimator.estimate_wait_time(unit, 'b', query_time)
         blue_est = 0
