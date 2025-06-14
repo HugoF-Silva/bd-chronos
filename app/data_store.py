@@ -30,6 +30,7 @@ def hash_pseudonym(pseudonym: str, salt: str) -> str:
 
 class DataStore:
     def __init__(self):
+        #opa
         # Each row: pseudonym, unit, cinza_time, rc_time, risk_color, delta_t, slot, day
         # self.df = pd.DataFrame(columns=[
         #     "pseudonym", "unit", "cinza_time", "rc_time", "risk_color", "delta_t", "slot", "day"
