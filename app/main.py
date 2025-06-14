@@ -132,6 +132,7 @@ def route_times(req: RouteTimeRequest):
             }
         )
     # Store or overwrite for user
+    #aprendiii porraaa, facinho dms slk
     datastore.store_user_route_times(req.user_phone, results)
     return {"message": "Route times stored."}
 
