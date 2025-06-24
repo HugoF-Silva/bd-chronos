@@ -124,13 +124,13 @@ class DataStore:
     
     def list_units(self):
         # This is an MVP approach - scan table and extract unique units.
-        response = self.table.scan(
-            ProjectionExpression="#u",
-            ExpressionAttributeNames={"#u": "unit"}
+        response = self.units_table.query(
+            IndexName="EntityTypeIndex",
+            KeyConditionExpression=Key('EntityType').eq('unit')
         )
         items = response.get('Items', [])
-        units = set(item['unit'] for item in items)
-        return list(units)
+        units = [item['unit'] for item in items]
+        return units
 
     def store_user_route_times(self, user_phone, results):
         # Calculate ttl for 48 hours from now
@@ -163,8 +163,11 @@ class DataStore:
 
     # List registered units
     def get_all_units_with_locations(self) -> List[Dict]:
-        resp = self.units_table.scan()
-        return resp.get("Items", [])
+        response = self.units_table.query(
+        IndexName="EntityTypeIndex",
+        KeyConditionExpression=Key('EntityType').eq('unit')
+        )
+        return response.get("Items", [])
 
     # Retrieve stored route times for a user
     def get_user_route_times(self, user_phone: str) -> List[Dict]:
@@ -181,12 +184,11 @@ class DataStore:
             print("YES cache")
             return self.est_cache[key]
         print("NOT cache")
-        resp = self.table.scan(
-            FilterExpression=Attr('unit').eq(unit)
-                            & Attr('risk_color').eq(color)
-                            & Attr('slot').eq(slot)
-                            & Attr('day').eq(day_str)
-                            & Attr('event_type').eq('rc')
+        partition_key = unit
+        sort_key = f"{day_str}#{slot}#{color}"
+        resp = self.table.query(
+            IndexName="UnitDaySlotColorIndex",
+            KeyConditionExpression=Key('unit').eq(partition_key) & Key('day_slot_color').eq(sort_key)
         )
         items = resp.get('Items', [])
         if not items:
@@ -208,11 +210,11 @@ class DataStore:
         if key in self.est_cache:
             return self.est_cache[key]
         
-        resp = self.table.scan(
-            FilterExpression=Attr('unit').eq(unit)
-                            & Attr('risk_color').eq(color)
-                            & Attr('slot').eq(slot)
-                            & Attr('event_type').eq('rc')
+        partition_key = unit
+        sort_key = f"{slot}#{color}"
+        resp = self.table.query(
+            IndexName="UnitSlotColorIndex",
+            KeyConditionExpression=Key('unit').eq(partition_key) & Key('slot_color').eq(sort_key)
         )
         items = resp.get('Items', [])
         if not items:
@@ -234,11 +236,11 @@ class DataStore:
         if key in self.est_cache:
             return self.est_cache[key]
         
-        resp = self.table.scan(
-            FilterExpression=Attr('unit').eq(unit)
-                            & Attr('risk_color').eq(color)
-                            & Attr('slot').eq(slot)
-                            & Attr('event_type').eq('rc')
+        partition_key = unit
+        sort_key = f"{color}#{slot}#{weekday}"
+        resp = self.table.query(
+            IndexName="UnitSlotColorWeekdayIndex",
+            KeyConditionExpression=Key('unit').eq(partition_key) & Key('color_slot_weekday').eq(sort_key)
         )
         items = resp.get('Items', [])
         if not items:
@@ -266,10 +268,9 @@ class DataStore:
         if key in self.est_cache:
             return self.est_cache[key]
         
-        resp = self.table.scan(
-            FilterExpression=Attr('risk_color').eq(color)
-                            & Attr('slot').eq(slot)
-                            & Attr('event_type').eq('rc')
+        resp = self.table.query(
+            IndexName="ColorSlotIndex",
+            KeyConditionExpression=Key('risk_color').eq(color) & Key('slot').eq(slot)
         )
         items = resp.get('Items', [])
         if not items:
